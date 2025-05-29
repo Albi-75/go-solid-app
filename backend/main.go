@@ -1,8 +1,7 @@
 package main
 
 import (
-	"github.com/Albi-75/go-solid-app/backend/routes"
-
+	"github.com/Albi-75/go-solid-app/routes"
 	"github.com/gin-gonic/gin"
 )
 
