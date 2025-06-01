@@ -2,21 +2,22 @@ package main
 
 import (
 	"database/sql"
+	"go-solid-app/backend/internal/handler"
 	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 
-	"go-solid-app/backend/internal/handler"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "go-solid-app/backend/cmd/app/docs"
+
+	swaggerFiles "github.com/swaggo/files"
 )
 
 func main() {
 	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		dbURL = "postgres://postgres:password@db:5432/tododb?sslmode=disable"
-	}
-
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatalf("failed to connect to db: %v", err)
@@ -25,6 +26,8 @@ func main() {
 
 	r := gin.Default()
 	handler.Register(r, db)
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	port := os.Getenv("PORT")
 	if port == "" {
