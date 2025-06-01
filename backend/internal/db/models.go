@@ -4,8 +4,19 @@
 
 package db
 
+import (
+	"time"
+)
+
 type Todo struct {
 	ID          int32
 	Description string
 	Completed   bool
+}
+
+type User struct {
+	ID           int32
+	Username     string
+	PasswordHash string
+	CreatedAt    time.Time
 }

@@ -2,8 +2,8 @@ import { createSignal, createResource, For } from "solid-js";
 
 type Todo = {
   id: number;
-  text: string;
-  done: boolean;
+  description: string;
+  completed: boolean;
 };
 
 const fetchTodos = async (): Promise<Todo[]> => {
@@ -16,13 +16,18 @@ export default function App() {
   const [text, setText] = createSignal("");
   const [todos, { refetch }] = createResource(fetchTodos);
 
+  const deleteTodo = async (id: number) => {
+    await fetch(`/api/todos/${id}`, { method: "DELETE" });
+    refetch();
+};
+
   const addTodo = async (e: Event) => {
     e.preventDefault();
     if (!text().trim()) return;
     await fetch("/api/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: text() }),
+      body: JSON.stringify({ description: text() }),
     });
     setText("");
     refetch();
@@ -56,21 +61,27 @@ export default function App() {
             {todo => (
               <li class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded px-4 py-2">
                 <span
-                  class={`flex-1 ${todo.done ? "line-through text-gray-400" : ""}`}
+                  class={`flex-1 ${todo.completed ? "line-through text-gray-400" : ""}`}
                 >
-                  {todo.text}
+                  {todo.description}
                 </span>
-                {!todo.done && (
+                {!todo.completed && (
                   <button
                     class="ml-4 text-sm bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
                     onClick={() => markDone(todo.id)}
                   >
-                    Mark done
+                    Mark completed
                   </button>
                 )}
-                {todo.done && (
+                {todo.completed && (
                   <span class="ml-4 text-green-600 font-semibold text-xs">Done</span>
                 )}
+                <button
+                  class="ml-2 text-sm bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                  onClick={() => deleteTodo(todo.id)}
+                >
+                  Delete
+                </button>
               </li>
             )}
           </For>

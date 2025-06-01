@@ -4,9 +4,13 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [tailwindcss(),solid()],
-  server: {
+server: {
   proxy: {
-    '/api': 'http://localhost:8080/api'
+    '/api': {
+      target: 'http://backend:8080',
+      changeOrigin: true,
+      rewrite: path => path.replace(/^\/api/, ''),
+    }
   }
 }
 })
